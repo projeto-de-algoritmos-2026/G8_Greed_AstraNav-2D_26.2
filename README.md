@@ -9,7 +9,7 @@
 | 251013624  | Mateus Alves Araujo |
 ---
 
-# AstraNav-2D: Planejador de Missão Interplanetária via Algoritmos Gulosos
+# AstraNav-2D
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Build](https://img.shields.io/badge/build-CMake-green.svg)
