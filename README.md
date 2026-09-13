@@ -1,3 +1,14 @@
+# G8_Greed_CosmoPath-2D_26.2
+
+*Módulo da disciplina*: Greed
+--- 
+## Alunos
+| Matrícula | Aluno |
+|---|---|
+| 251012313 | Luis Gustavo Ferreira Nunes |
+| 251013624  | Mateus Alves Araujo |
+---
+
 # CosmoPath-2D: Planejador de Missão Interplanetária via Algoritmos Gulosos
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
