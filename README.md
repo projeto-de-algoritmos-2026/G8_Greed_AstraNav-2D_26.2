@@ -1,4 +1,4 @@
-# G8_Greed_CosmoPath-2D_26.2
+# G8_Greed_AstraNav-2D_26.2
 
 *Módulo da disciplina*: Greed
 --- 
@@ -9,14 +9,14 @@
 | 251013624  | Mateus Alves Araujo |
 ---
 
-# CosmoPath-2D: Planejador de Missão Interplanetária via Algoritmos Gulosos
+# AstraNav-2D: Planejador de Missão Interplanetária via Algoritmos Gulosos
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Build](https://img.shields.io/badge/build-CMake-green.svg)
 ![Graphics](https://img.shields.io/badge/graphics-Raylib-red.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-**CosmoPath-2D** é um simulador de planejamento de missão e autonomia de voo para sondas espaciais. O projeto resolve problemas de alocação de carga científica e otimização de rota interplanetária através da aplicação de **Algoritmos Gulosos** (*Greedy Algorithms*), integrando a solução a uma interface gráfica 2D em tempo real.
+**AstraNav-2D** é um simulador de planejamento de missão e autonomia de voo para sondas espaciais. O projeto resolve problemas de alocação de carga científica e otimização de rota interplanetária através da aplicação de **Algoritmos Gulosos** (*Greedy Algorithms*), integrando a solução a uma interface gráfica 2D em tempo real.
 
 ---
 
@@ -54,7 +54,7 @@ Abaixo está um esboço de como ficará o projeto até o fim do projeto. O intui
 (pode e deverá sofrer mudanças quando necessario)
 
 ```text
-cosmopath-2d/
+astranav-2d/
 ├── CMakeLists.txt
 ├── README.md
 ├── LICENSE
@@ -95,7 +95,7 @@ cosmopath-2d/
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/cosmopath-2d.git
+git clone https://github.com/seu-usuario/cosmopath-2d.git astranav-2d
 cd cosmopath-2d
 
 # Configure e compile via CMake
