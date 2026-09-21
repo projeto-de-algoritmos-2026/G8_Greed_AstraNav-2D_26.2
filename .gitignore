@@ -1,0 +1,23 @@
+# Diretórios de compilação do CMake
+build/
+cmake-build-*/
+out/
+
+# Binário do projeto (caso vaze para a raiz)
+astranav_2d
+
+# Cache e artefatos de compilação
+CMakeCache.txt
+CMakeFiles/
+Makefile
+*.cmake
+compile_commands.json
+
+# Arquivos de configuração de IDEs (VSCode, CLion, etc.)
+.vscode/
+.idea/
+*.swp
+
+# Arquivos temporários do sistema operacional
+.DS_Store
+*~
