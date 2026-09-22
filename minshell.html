@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <title>AstraNav-2D - Simulador</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Remove a borda padrão do canvas ao ser clicado */
+        canvas.emscripten { 
+            border: 0px none; 
+            background-color: black;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- O Canvas onde o Raylib desenha a simulação -->
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+    <script type='text/javascript'>
+        var Module = {
+            canvas: (function() {
+                var canvas = document.getElementById('canvas');
+                // Previne ações padrão do navegador para teclas de seta e espaço
+                canvas.addEventListener("keydown", function(e) {
+                    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                        e.preventDefault();
+                    }
+                }, false);
+                return canvas;
+            })()
+        };
+    </script>
+    
+    {{{ SCRIPT }}}
+</body>
+</html>
