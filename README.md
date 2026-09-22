@@ -103,7 +103,7 @@ astranav-2d/
 
 ```
 # Clone o repositório
-git clone https://github.com/seu-usuario/astranav-2d.git
+git clone https://github.com/projeto-de-algoritmos-2026/G8_Greed_AstraNav-2D_26.2
 cd astranav-2d
 
 # Configure e compile via CMake
