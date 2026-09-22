@@ -26,7 +26,6 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 if (EMSCRIPTEN)
-    set(PLATFORM "Web" CACHE STRING "" FORCE)
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 
     target_link_options(${PROJECT_NAME} PRIVATE
