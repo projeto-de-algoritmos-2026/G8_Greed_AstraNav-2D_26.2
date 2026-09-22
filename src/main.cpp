@@ -26,8 +26,7 @@ int main() {
         window.begin_drawing();
         window.clear_background(Color{ 10, 15, 25, 255 });
         
-        DrawText("astranav-2D : Motor de Renderização Ativo", 400, 320, 20, LIGHTGRAY);
-        DrawText("Pressione ESC para fechar.", 395, 360, 18, DARKGRAY);
+        window.draw_cargo_hud(voyager.get_cargo_manifest(), 50, 50);
 
         window.end_drawing();
     }

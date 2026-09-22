@@ -7,7 +7,7 @@ namespace astranav::core {
           max_fuel_autonomy(max_fuel), current_fuel(max_fuel), current_position(0.0) {}
 
     void Probe::load_cargo(const std::vector<algorithms::Instrument>& available_instruments) {
-        cargo_manifest = algorithms::optimize_probe_cargo(available_instruments, max_fuel_autonomy);
+        cargo_manifest = algorithms::optimize_probe_cargo(available_instruments, max_cargo_capacity);
     }
 
     bool Probe::calculate_flight_plan(double destination_distance, const std::vector<algorithms::Outpost>& route_stations) {
