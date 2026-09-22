@@ -28,6 +28,8 @@ int main() {
         
         window.draw_cargo_hud(voyager.get_cargo_manifest(), 50, 50);
 
+        window.draw_flight_plan(voyager.get_flight_plan(), route, 800.0, 360.0f);
+
         window.end_drawing();
     }
 
