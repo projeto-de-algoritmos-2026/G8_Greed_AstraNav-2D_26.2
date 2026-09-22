@@ -1,5 +1,6 @@
 # Diretórios de compilação do CMake
 build/
+build_web/
 cmake-build-*/
 out/
 

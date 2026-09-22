@@ -25,5 +25,16 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # Criação do executável
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+if (EMSCRIPTEN)
+    set(PLATFORM "Web" CACHE STRING "" FORCE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+
+    target_link_options(${PROJECT_NAME} PRIVATE
+        "-sASYNCIFY" 
+        "-sUSE_GLFW=3"
+        "--preload-file assets"
+    )
+endif()
+
 # Link das bibliotecas necessárias (Raylib e dependências do sistema)
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
