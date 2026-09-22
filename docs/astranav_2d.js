@@ -9071,8 +9071,6 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       }),
   };
 
-  var requestFullscreen = Browser.requestFullscreen;
-
   FS.createPreloadedFile = FS_createPreloadedFile;
   FS.preloadFile = FS_preloadFile;
   FS.staticInit();;
@@ -9141,7 +9139,6 @@ if (Module['printErr']) err = Module['printErr'];
 }
 
 // Begin runtime exports
-  Module['requestFullscreen'] = requestFullscreen;
   var missingLibrarySymbols = [
   'writeI53ToI64Clamped',
   'writeI53ToI64Signaling',
@@ -9374,6 +9371,7 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'exceptionCaught',
   'ExceptionInfo',
   'Browser',
+  'requestFullscreen',
   'setCanvasSize',
   'getUserMedia',
   'createContext',

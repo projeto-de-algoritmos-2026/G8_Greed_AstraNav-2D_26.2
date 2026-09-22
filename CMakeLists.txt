@@ -32,7 +32,7 @@ if (EMSCRIPTEN)
         "-sASYNCIFY" 
         "-sUSE_GLFW=3"
         "--preload-file assets"
-        "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/minshell.html"
+        "--shell-file=${CMAKE_CURRENT_SOURCE_DIR}/minshell.html"
     )
 endif()
 
