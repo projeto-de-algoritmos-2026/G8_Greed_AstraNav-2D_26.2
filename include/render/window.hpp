@@ -21,5 +21,6 @@ namespace astranav::render {
 
         void draw_cargo_hud(const algorithms::CargoResult& cargo, float x, float y) const;
         void draw_flight_plan(const algorithms::RoutePlan& plan, const std::vector<algorithms::Outpost>& all_outposts, double total_distance, float y_pos) const;
+        void draw_probe_sprite(double current_pos, double current_fuel, double total_distance, float y_pos) const;
     };
 }

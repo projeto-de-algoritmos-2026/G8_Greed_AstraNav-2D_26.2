@@ -13,9 +13,10 @@ namespace astranav::core {
         double max_fuel_autonomy;
         double current_fuel;
         double current_position;
-
         algorithms::CargoResult cargo_manifest;
         algorithms::RoutePlan flight_plan;
+        float refueling_timer;
+        bool is_refueling;
     
     public:
         Probe(std::string name, double max_cargo, double max_fuel);
@@ -23,9 +24,13 @@ namespace astranav::core {
         void load_cargo(const std::vector<algorithms::Instrument>& available_instruments);
         bool calculate_flight_plan(double destination_distance, const std::vector<algorithms::Outpost>& route_stations);
 
+        void update_simulation(float delta_time, double total_distance);
+
         const algorithms::CargoResult& get_cargo_manifest() const;
         const algorithms::RoutePlan& get_flight_plan() const;
         double get_position() const;
         double get_fuel() const;
+
+        bool get_is_refueling() const;
     };
 }

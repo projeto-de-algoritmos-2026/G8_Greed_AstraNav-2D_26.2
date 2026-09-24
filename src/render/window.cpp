@@ -70,4 +70,21 @@ namespace astranav::render {
             if (is_stop) { DrawText("REABASTECER", pos_x - 40, y_pos + 15, 12, YELLOW); }
         }
     }
+
+    void Window::draw_probe_sprite(double current_pos, double current_fuel, double total_distance, float y_pos) const {
+        float start_x = 420.0f;
+        float end_x = 1200.0f;
+        float width = end_x - start_x;
+
+        float pos_x = start_x + (current_pos / total_distance) * width;
+
+        Vector2 v1 = {pos_x + 15, y_pos};
+        Vector2 v2 = {pos_x - 10, y_pos - 15};
+        Vector2 v3 = {pos_x - 10, y_pos + 15};
+
+        DrawTriangle(v1, v2, v3, LIME);
+
+        Color fuel_color = (current_fuel > 50.0) ? LIME : RED;
+        DrawText(TextFormat("Combustivel: %.1f", current_fuel), pos_x - 40, y_pos - 40, 16, fuel_color);
+    }
 }
