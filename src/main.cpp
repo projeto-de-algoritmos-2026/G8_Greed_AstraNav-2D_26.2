@@ -23,12 +23,19 @@ int main() {
     voyager.calculate_flight_plan(800.0, route);
 
     while(!window.should_close()) {
+        /* UPDATE */
+        float dt = GetFrameTime();
+        voyager.update_simulation(dt, 800.0);
+
+        /* DRAW */
         window.begin_drawing();
         window.clear_background(Color{ 10, 15, 25, 255 });
         
         window.draw_cargo_hud(voyager.get_cargo_manifest(), 50, 50);
-
         window.draw_flight_plan(voyager.get_flight_plan(), route, 800.0, 360.0f);
+
+        /* ANIMATION */
+        window.draw_probe_sprite(voyager.get_position(), voyager.get_fuel(), 800.0, 360.0f);
 
         window.end_drawing();
     }
