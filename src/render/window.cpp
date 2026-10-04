@@ -11,6 +11,17 @@ namespace astranav::render {
         CloseWindow();
     }
 
+    void Window::draw_alert_box(const std::string& message) const {
+        int screenWidth = GetScreenWidth();
+        int screenHeight = GetScreenHeight();
+
+        DrawRectangle(0, 0, screenWidth, screenHeight, Fade(RED, 0.7f));
+
+        int fontSize = 30;
+        int textWidth = MeasureText(message.c_str(), fontSize);
+        DrawText(message.c_str(), (screenWidth - textWidth) / 2, (screenHeight - fontSize) / 2, fontSize, WHITE);
+    }
+
     bool Window::should_close() const { return WindowShouldClose(); }
     void Window::begin_drawing() const { BeginDrawing(); }
     void Window::end_drawing() const { EndDrawing(); }
