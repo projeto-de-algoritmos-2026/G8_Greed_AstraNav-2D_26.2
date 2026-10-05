@@ -17,7 +17,7 @@ int main() {
     voyager.load_cargo(instruments);
 
     std::vector<astranav::algorithms::Outpost> route = {
-        {"Estação Alpha", 400.0},
+        {"Estação Alpha", 200.0},
         {"Estação Beta", 450.0},
         {"Estação Gama", 700.0}
     };
@@ -31,6 +31,7 @@ int main() {
         window.begin_drawing();
         window.clear_background(Color{ 10, 15, 25, 255 });
         if (is_route_possible) {
+            window.draw_stars(voyager.get_position());
             voyager.update_simulation(dt, 800.0);
             window.draw_cargo_hud(voyager.get_cargo_manifest(), 50, 50);
             window.draw_flight_plan(voyager.get_flight_plan(), route, 800.0, 360.0f);

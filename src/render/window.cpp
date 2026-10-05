@@ -1,14 +1,47 @@
 #include "render/window.hpp"
 #include <algorithm>
+#include <cmath>
+#include <vector>
 
 namespace astranav::render {
     Window::Window(int width, int height, const std::string& title) {
         InitWindow(width, height, title.c_str());
         SetTargetFPS(60);
+
+        // Gera 250 estrelas com tamanhos, opacidades e profundidades variadas
+        for (int i = 0; i < 250; i++) {
+            Star s;
+            s.x = (float)GetRandomValue(0, width);
+            s.y = (float)GetRandomValue(0, height);
+            s.radius = (float)GetRandomValue(1, 20) / 10.0f; // Tamanhos entre 0.1 e 2.0
+
+            // Estrelas maiores (mais perto) recebem um fator de deslocamento maior
+            s.parallax_factor = s.radius * 0.5f;
+            s.alpha = (unsigned char)GetRandomValue(80, 255);
+            stars.push_back(s);
+        }
     }
 
     Window::~Window(){
         CloseWindow();
+    }
+
+    void Window::draw_stars(double probe_position) const {
+        float screen_width = (float)GetScreenWidth();
+
+        for (const auto& star : stars) {
+            // Calcula o deslocamento isolado baseado na posição da sonda
+            float offset = (float)probe_position * star.parallax_factor;
+
+            // Envolve a coordenada X (wrapping). Se a estrela sair pela esquerda, ressurge na direita
+            float draw_x = fmodf(star.x - offset, screen_width);
+            if (draw_x < 0) {
+                draw_x += screen_width;
+            }
+
+            Color star_color = { 255, 255, 255, star.alpha };
+            DrawCircleV({draw_x, star.y}, star.radius, star_color);
+        }
     }
 
     void Window::draw_alert_box(const std::string& message) const {
