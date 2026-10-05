@@ -17,7 +17,7 @@ int main() {
     voyager.load_cargo(instruments);
 
     std::vector<astranav::algorithms::Outpost> route = {
-        {"Estação Alpha", 400.0},
+        {"Estação Alpha", 200.0},
         {"Estação Beta", 450.0},
         {"Estação Gama", 700.0}
     };

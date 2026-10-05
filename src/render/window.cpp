@@ -59,11 +59,23 @@ namespace astranav::render {
         DrawLineEx({start_x, y_pos}, {end_x, y_pos}, 2.0f, Fade(LIGHTGRAY, 0.4f));
         
         /* Terra */
-        DrawCircleV({start_x, y_pos}, 12.0f, BLUE);
+        // 1. Glow / Atmosfera sutil ao redor da Terra
+        DrawCircle((int)start_x, (int)y_pos, 16.0f, Fade(SKYBLUE, 0.3f));
+
+        // 2. Corpo do planeta com gradiente radial (dando efeito esférico/volume)
+        DrawCircleGradient((int)start_x, (int)y_pos, 12.0f, SKYBLUE, DARKBLUE);
+
+        // Label
         DrawText("Terra", start_x - 15, y_pos + 20, 18, RAYWHITE);
 
         /* Destino */
-        DrawCircleV({end_x, y_pos}, 16.0f, PURPLE);
+        // 1. Glow / Atmosfera sutil ao redor do Destino
+        DrawCircle((int)end_x, (int)y_pos, 22.0f, Fade(PINK, 0.3f));
+
+        // 2. Corpo do planeta com gradiente radial
+        DrawCircleGradient((int)end_x, (int)y_pos, 16.0f, MAGENTA, DARKPURPLE);
+
+        // Label
         DrawText("Destino", end_x - 30, y_pos + 25, 18, RAYWHITE);
 
         for (const auto& outpost : all_outposts) {
