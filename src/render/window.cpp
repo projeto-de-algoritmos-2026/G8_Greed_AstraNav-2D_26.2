@@ -28,26 +28,53 @@ namespace astranav::render {
     void Window::clear_background(Color color) const { ClearBackground(color); }
 
     void Window::draw_cargo_hud(const algorithms::CargoResult& cargo, float x, float y) const {
-        DrawRectangle(x, y, 320, 400, Fade(DARKGRAY, 0.0f));
-        DrawRectangleLines(x, y, 320, 400, LIGHTGRAY);
-        DrawText("MANIFESTO DE CARGA", x + 20, y + 15, 20, RAYWHITE);
+        float sidebar_width = 360.0f;
+        float screen_height = (float)GetScreenHeight();
 
-        float current_y = y + 50;
+        // 1. Fundo sólido da sidebar e borda
+        DrawRectangleRounded(Rectangle{0, 0, sidebar_width, screen_height}, 0.02f, 4, Color{15, 20, 30, 255});
+        DrawRectangleRoundedLines(Rectangle{0, 0, sidebar_width, screen_height}, 0.02f, 4, 2.0f, Fade(LIGHTGRAY, 0.2f));
 
+        // Margem interna segura para os elementos da sidebar
+        float padding = 15.0f;
+        float item_width = sidebar_width - (padding * 2.0f); // 360 - 30 = 330px de largura útil
+
+        // 2. Títulos da Sidebar
+        DrawText("PAINEL DE CONTROLO", padding, y, 20, RAYWHITE);
+        DrawText("MANIFESTO DE CARGA", padding, y + 35, 14, SKYBLUE);
+
+        float current_y = y + 70;
+
+        // 3. Listagem de itens de carga
         for (const auto& item : cargo.loaded_items) {
             Color item_color = (item.fraction_taken < 1.0) ? ORANGE : LIME;
 
-            DrawRectangle(x + 15, current_y, 290, 40, Fade(item_color, 0.4f));
-            DrawRectangleLines(x + 15, current_y, 290, 40, item_color);
+            DrawRectangleRounded(Rectangle{padding, current_y, item_width, 40}, 0.1f, 4, Fade(item_color, 0.2f));
+            DrawRectangleRoundedLines(Rectangle{padding, current_y, item_width, 40}, 0.1f, 4, 1.5f, item_color);
 
             const char* text = TextFormat("%s, (%.0f%%)", item.name.c_str(), item.fraction_taken * 100);
-            DrawText(text, x + 25, current_y + 10, 20, WHITE);
+            DrawText(text, padding + 10, current_y + 10, 16, WHITE);
 
-            current_y += 45;
+            current_y += 50;
         }
 
-        DrawText(TextFormat("Peso Usado: %.1f kg", cargo.total_weight), x + 20, current_y + 20, 20, LIGHTGRAY);
-        DrawText(TextFormat("Retorno Científico: %.1f", cargo.total_scientific_return), x + 20, current_y + 50, 20, GREEN);
+        // 4. Estatísticas de Carga
+        DrawText(TextFormat("Peso Usado: %.1f kg", cargo.total_weight), padding, current_y + 10, 16, LIGHTGRAY);
+        DrawText(TextFormat("Retorno Científico: %.1f", cargo.total_scientific_return), padding, current_y + 35, 16, GREEN);
+
+        // 5. Seção de Controlos da Simulação
+        float controls_y = screen_height - 140.0f;
+        DrawLineEx({padding, controls_y}, {sidebar_width - padding, controls_y}, 1.0f, Fade(LIGHTGRAY, 0.3f));
+        DrawText("CONTROLOS DA SIMULAÇÃO", padding, controls_y + 15, 14, GRAY);
+
+        // Botões ajustados para caber perfeitamente dentro dos 360px
+        float button_width = (item_width - 10.0f) / 2.0f; // Divide o espaço em duas colunas simétricas
+
+        DrawRectangleRounded(Rectangle{padding, controls_y + 45, button_width, 35}, 0.2f, 4, Fade(DARKGRAY, 0.5f));
+        DrawText("[ PLAY / PAUSE ]", padding + 8, controls_y + 55, 11, LIGHTGRAY);
+
+        DrawRectangleRounded(Rectangle{padding + button_width + 10.0f, controls_y + 45, button_width, 35}, 0.2f, 4, Fade(DARKGRAY, 0.5f));
+        DrawText("[ VELOCIDADE 1X ]", padding + button_width + 15.0f, controls_y + 55, 11, LIGHTGRAY);
     }
 
     void Window::draw_flight_plan(const algorithms::RoutePlan& plan, const std::vector<algorithms::Outpost>& all_outposts, double total_distance, float y_pos) const {
