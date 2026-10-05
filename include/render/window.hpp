@@ -13,7 +13,7 @@ namespace astranav::render {
 
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
-
+        void draw_alert_box(const std::string& message) const;
         bool should_close() const;
         void begin_drawing() const;
         void end_drawing() const;
