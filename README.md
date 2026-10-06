@@ -85,8 +85,7 @@ astranav-2d/
 │   ├── render/
 │   │   └── window.cpp
 │   └── main.cpp
-└── tests/
-    └── test_algorithms.cpp
+└── 
 ```
 
 ## > --- Compilação e Execução --- <
@@ -155,7 +154,7 @@ O **AstraNav-2D** pode ser compilado para WebAssembly, permitindo que a simulaç
 
 | **Fase** | **Período** | **Objetivos** |
 | --- | --- | --- |
-| **Fase 1: Módulos Algorítmicos** | 13/09 – 17/09 | Implementação e testes unitários dos algoritmos de Mochila Fracionária e Caminhoneiro em C++. | 
+| **Fase 1: Módulos Algorítmicos** | 13/09 – 17/09 | Implementação dos algoritmos de Mochila Fracionária e Caminhoneiro em C++. | 
 | **Fase 2: Motor Gráfico 2D** | 18/09 – 22/09 | Configuração do Raylib, criação da janela e renderização dos corpos celestes e da sonda. | 
 | **Fase 3: Integração e Animação** | 23/09 – 27/09 | Vincular as decisões dos algoritmos à simulação visual e ao painel de telemetria. | 
 | **Fase 4: Polimento e Documentação** | 28/09 – 02/10 | Ajustes de UI, validação dos casos de teste e preparação do relatório final. | 
