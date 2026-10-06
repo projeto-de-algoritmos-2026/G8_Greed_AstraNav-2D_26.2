@@ -10,7 +10,7 @@
     return vers.join('');
   }
   // 300000 -> "30.0.0"
-  var packedVersionToHumanReadable = n => [n / 10000 | 0, (n / 100 | 0) % 100, n % 100].join('.');
+  var packedVersionToHumanReadable = n => [n / 10_000 | 0, (n / 100 | 0) % 100, n % 100].join('.');
 
   var TARGET_NOT_SUPPORTED = 2147483647;
 
@@ -1208,17 +1208,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           var buf = Buffer.alloc(BUFSIZE);
           var bytesRead = 0;
   
-          // For some reason we must suppress a closure warning here, even though
-          // fd definitely exists on process.stdin, and is even the proper way to
-          // get the fd of stdin,
-          // https://github.com/nodejs/help/issues/2136#issuecomment-523649904
-          // This started to happen after moving this logic out of library_tty.js,
-          // so it is related to the surrounding code in some unclear manner.
-          /** @suppress {missingProperties} */
-          var fd = process.stdin.fd;
-  
           try {
-            bytesRead = fs.readSync(fd, buf, 0, BUFSIZE);
+            bytesRead = fs.readSync(process.stdin.fd, buf, 0, BUFSIZE);
           } catch(e) {
             // Cross-platform differences: on Windows, reading EOF throws an
             // exception, but on other OSes, reading EOF returns 0. Uniformize
@@ -1228,7 +1219,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           }
   
           if (bytesRead > 0) {
-            result = buf.slice(0, bytesRead).toString('utf-8');
+            result = buf.toString('utf-8', 0, bytesRead);
           }
         } else
         if (globalThis.window?.prompt) {
@@ -1850,6 +1841,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       'ESTRPIPE': 135,
     };
   
+  
   var asyncLoad = async (url) => {
       var arrayBuffer = await readAsync(url);
       assert(arrayBuffer, `Loading data file "${url}" failed (no arrayBuffer).`);
@@ -1928,7 +1920,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           if (shown) {
             err('(end of list)');
           }
-        }, 10000);
+        }, 10_000);
         // Prevent this timer from keeping the runtime alive if nothing
         // else is.
         runDependencyWatcher.unref?.()
@@ -2628,9 +2620,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         var rtn = {
           bsize: 4096,
           frsize: 4096,
-          blocks: 1e6,
-          bfree: 5e5,
-          bavail: 5e5,
+          blocks: 1_000_000,
+          bfree: 500_000,
+          bavail: 500_000,
           files: FS.nextInode,
           ffree: FS.nextInode - 1,
           fsid: 42,
@@ -3194,8 +3186,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         return stream.stream_ops.ioctl(stream, cmd, arg);
       },
   readFile(path, opts = {}) {
-        opts.flags = opts.flags ?? 0;
-        opts.encoding = opts.encoding ?? 'binary';
+        opts.flags ??= 0;
+        opts.encoding ??= 'binary';
         if (opts.encoding !== 'utf8' && opts.encoding !== 'binary') {
           abort(`Invalid encoding type "${opts.encoding}"`);
         }
@@ -3211,7 +3203,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         return buf;
       },
   writeFile(path, data, opts = {}) {
-        opts.flags = opts.flags ?? 577;
+        opts.flags ??= 577;
         var stream = FS.open(path, opts.flags, opts.mode);
         data = FS_fileDataToTypedArray(data);
         FS.write(stream, data, 0, data.byteLength, undefined, opts.canOwn);
@@ -3374,14 +3366,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           }
         }
       },
-  findObject(path, dontResolveLastLink) {
-        var ret = FS.analyzePath(path, dontResolveLastLink);
-        if (!ret.exists) {
-          return null;
-        }
-        return ret.object;
-      },
   analyzePath(path, dontResolveLastLink) {
+        warnOnce('FS.analyzePath is deprecated; use FS.lookupPath or FS.stat instead');
         // operate from within the context of the symlink's target
         try {
           var lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
@@ -3714,15 +3700,17 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         HEAP64[(((buf)+(24))>>3)] = BigInt(stat.size);
         HEAP32[(((buf)+(32))>>2)] = 4096;
         HEAP32[(((buf)+(36))>>2)] = stat.blocks;
-        var atime = stat.atime.getTime();
-        var mtime = stat.mtime.getTime();
-        var ctime = stat.ctime.getTime();
+        // Prefer `*Ms` properties if available (e.g. from NODEFS / host `fs.Stats`)
+        // for sub-millisecond precision; fall back to Date#getTime for other filesystems.
+        var atime = stat.atimeMs ?? stat.atime.getTime();
+        var mtime = stat.mtimeMs ?? stat.mtime.getTime();
+        var ctime = stat.ctimeMs ?? stat.ctime.getTime();
         HEAP64[(((buf)+(40))>>3)] = BigInt(Math.floor(atime / 1000));
-        HEAPU32[(((buf)+(48))>>2)] = (atime % 1000) * 1000 * 1000;
+        HEAPU32[(((buf)+(48))>>2)] = Math.floor((atime % 1000) * 1_000_000);
         HEAP64[(((buf)+(56))>>3)] = BigInt(Math.floor(mtime / 1000));
-        HEAPU32[(((buf)+(64))>>2)] = (mtime % 1000) * 1000 * 1000;
+        HEAPU32[(((buf)+(64))>>2)] = Math.floor((mtime % 1000) * 1_000_000);
         HEAP64[(((buf)+(72))>>3)] = BigInt(Math.floor(ctime / 1000));
-        HEAPU32[(((buf)+(80))>>2)] = (ctime % 1000) * 1000 * 1000;
+        HEAPU32[(((buf)+(80))>>2)] = Math.floor((ctime % 1000) * 1_000_000);
         HEAP64[(((buf)+(88))>>3)] = BigInt(stat.ino);
         return 0;
       },
@@ -4029,7 +4017,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         return 52;
       }
       // "now" is in ms, and wasi times are in ns.
-      var nsec = Math.round(now * 1000 * 1000);
+      var nsec = Math.round(now * 1_000_000);
       HEAP64[((ptime)>>3)] = BigInt(nsec);
       return 0;
     ;
@@ -6544,13 +6532,13 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         }
       }
     };
-  var callUserCallback = (func) => {
+  var callUserCallback = (func, ...args) => {
       if (ABORT) {
         err('user callback triggered after runtime exited or application aborted.  Ignoring.');
         return;
       }
       try {
-        return func();
+        return func(...args);
       } catch (e) {
         handleException(e);
       } finally {
@@ -6562,14 +6550,12 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
   /** @param {number=} timeout */
   var safeSetTimeout = (func, timeout) => {
       
-      // Slot 0 is reserved so that, like setTimeout, ids are always non-zero.
-      safeSetTimeout.mapping ||= [0];
-      var id = safeSetTimeout.mapping.length;
-      safeSetTimeout.mapping[id] = setTimeout(() => {
-        safeSetTimeout.mapping[id] = undefined;
+      var id = safeSetTimeout.nextId++;
+      safeSetTimeout.pending.set(id, setTimeout(() => {
+        safeSetTimeout.pending.delete(id);
         
         callUserCallback(func);
-      }, timeout);
+      }, timeout));
       return id;
     };
   
@@ -6683,7 +6669,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
             // workaround for chrome bug 124926 - we do not always get oncanplaythrough or onerror
             safeSetTimeout(() => {
               finish(audio); // try to use it even though it is not necessarily ready to play
-            }, 10000);
+            }, 10_000);
           });
         };
         preloadPlugins.push(audioPlugin);
@@ -8785,7 +8771,6 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       if (GLFW.devicePixelRatioMQL)
         GLFW.devicePixelRatioMQL.removeEventListener('change', GLFW.onDevicePixelRatioChange);
   
-      canvas.width = canvas.height = 1;
       GLFW.windows = null;
       GLFW.active = null;
     };
@@ -8793,6 +8778,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
   var _glfwWindowHint = (target, hint) => {
       GLFW.hints[target] = hint;
     };
+
+  
+  var _random_get = (buffer, size) => randomFill(HEAPU8.subarray(buffer, buffer + size));
 
 
 
@@ -9059,7 +9047,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           _free(Asyncify.currData);
           Asyncify.currData = null;
           // Call all sleep callbacks now that the sleep-resume is all done.
-          Asyncify.sleepCallbacks.forEach(callUserCallback);
+          for (var cb of Asyncify.sleepCallbacks) {
+            callUserCallback(cb);
+          }
         } else {
           abort(`invalid state: ${Asyncify.state}`);
         }
@@ -9085,6 +9075,7 @@ var miniTempWebGLIntBuffersStorage = new Int32Array(288);
   for (/**@suppress{duplicate}*/var i = 0; i <= 288; ++i) {
     miniTempWebGLIntBuffers[i] = miniTempWebGLIntBuffersStorage.subarray(0, i);
   };
+safeSetTimeout.pending = new Map(); safeSetTimeout.nextId = 1;;
 
       Module['requestAnimationFrame'] = MainLoop.requestAnimationFrame;
       Module['pauseMainLoop'] = MainLoop.pause;
@@ -9495,7 +9486,6 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'FS_staticInit',
   'FS_init',
   'FS_quit',
-  'FS_findObject',
   'FS_analyzePath',
   'FS_createFile',
   'FS_createDataFile',
@@ -10277,7 +10267,9 @@ var wasmImports = {
   /** @export */
   glfwTerminate: _glfwTerminate,
   /** @export */
-  glfwWindowHint: _glfwWindowHint
+  glfwWindowHint: _glfwWindowHint,
+  /** @export */
+  random_get: _random_get
 };
 
 
@@ -10373,13 +10365,8 @@ function checkUnflushedContent() {
   try { // it doesn't matter if it fails
     _fflush(0);
     // also flush in the JS FS layer
-    for (var name of ['stdout', 'stderr']) {
-      var info = FS.analyzePath('/dev/' + name);
-      if (!info) return;
-      var stream = info.object;
-      var rdev = stream.rdev;
-      var tty = TTY.ttys[rdev];
-      if (tty?.output?.length) {
+    for (var tty of Object.values(TTY.ttys)) {
+      if (tty.output.length) {
         has = true;
       }
     }
