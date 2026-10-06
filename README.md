@@ -12,6 +12,22 @@
 
 **AstraNav-2D** é um simulador de planejamento de missão e autonomia de voo para sondas espaciais. O projeto resolve problemas de alocação de carga científica e otimização de rota interplanetária através da aplicação de **Algoritmos Ambiciosos** (*Greedy Algorithms*), integrando a solução a uma interface gráfica 2D em tempo real construída com **Raylib**.
 
+🌐 **[Acesse o Jogo Online (WebAssembly)](https://projeto-de-algoritmos-2026.github.io/G8_Greedy_AstraNav-2D_26.2/)**
+
+## > --- Interface Gráfica e Tela de Setup --- <
+
+O simulador conta com um menu de configuração interativo e um painel de telemetria completo em tempo real:
+
+* **Tela de Configuração de Missão:** Permite definir a distância total, autonomia da sonda e criar/remover instrumentos científicos personalizados com validação de limites.
+
+  Tela de Setup do AstraNav-2D
+  <img width="1342" height="772" alt="image" src="https://github.com/user-attachments/assets/3dcfdb34-f8c7-4e49-a43c-227a0cff56b9" />
+
+* **Simulação Principal e HUD:** Exibe a rota interplanetária procedural, barra de progresso com quilometragem exata, controles de velocidade/pausa e o manifesto da mochila fracionária.
+  
+  Painel de Controle e Simulação
+  <img width="1342" height="772" alt="image" src="https://github.com/user-attachments/assets/ab462c74-75ec-40b9-ac86-c047c1e4d3d8" />
+
 ## > --- Algoritmos da Ementa Implementados --- <
 
 ### 1. Mochila Fracionária — Alocação de Carga Útil
@@ -22,9 +38,7 @@ A sonda possui uma capacidade limite de massa em quilogramas ($W$). Cada módulo
 
   1. Calcula-se a densidade de valor por peso de cada item:
 
-$$
-\text{Densidade}_i = \frac{v_i}{w_i}
-$$
+$$\text{Densidade}_i = \frac{v_i}{w_i}$$
 
 2. Os itens são ordenados em ordem decrescente de densidade.
 
@@ -85,7 +99,7 @@ astranav-2d/
 │   ├── render/
 │   │   └── window.cpp
 │   └── main.cpp
-└── 
+└──
 ```
 
 ## > --- Compilação e Execução --- <
@@ -100,7 +114,7 @@ astranav-2d/
 
 ### Passos de Build Nativo
 
-```
+```bash
 # Clone o repositório
 git clone https://github.com/projeto-de-algoritmos-2026/G8_Greed_AstraNav-2D_26.2 astranav-2d
 cd astranav-2d
@@ -119,45 +133,44 @@ O **AstraNav-2D** pode ser compilado para WebAssembly, permitindo que a simulaç
 
 ### Pré-requisitos para a Web
 
-* [Emscripten SDK (emsdk)](https://emscripten.org/docs/getting_started/downloads.html?utm_source=gemini) instalado no sistema.
+* [Emscripten SDK (emsdk)](https://emscripten.org/docs/getting_started/downloads.html) instalado no sistema.
 
 ### Passos para Compilação Web
 
 1. **Ative o ambiente do Emscripten** no seu terminal:
+```bash
+source /caminho/para/emsdk/emsdk_env.sh
+```
 
-   ```
-   source /caminho/para/emsdk/emsdk_env.sh
-   ```
 
 2. **Configure o projeto** utilizando a toolchain web e a flag de plataforma:
+```bash
+emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web
+```
 
-   ```
-   emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web
-   ```
 
 3. **Execute a compilação**:
+```bash
+cmake --build build_web
+```
 
-   ```
-   cmake --build build_web
-   ```
 
 4. **Teste localmente** (devido às restrições de CORS dos navegadores, utilize um servidor HTTP local):
+```bash
+cd build_web
+python3 -m http.server 8080
+```
 
-   ```
-   cd build_web
-   python3 -m http.server 8080
-   ```
-
-   Acesse `http://localhost:8080/astranav_2d.html` no seu navegador.
+Acesse `http://localhost:8080/astranav_2d.html` no seu navegador.
 
 ## > --- | Cronograma de Desenvolvimento (13/09 a 02/10) | --- <
 
 | **Fase** | **Período** | **Objetivos** |
 | --- | --- | --- |
-| **Fase 1: Módulos Algorítmicos** | 13/09 – 17/09 | Implementação dos algoritmos de Mochila Fracionária e Caminhoneiro em C++. | 
-| **Fase 2: Motor Gráfico 2D** | 18/09 – 22/09 | Configuração do Raylib, criação da janela e renderização dos corpos celestes e da sonda. | 
-| **Fase 3: Integração e Animação** | 23/09 – 27/09 | Vincular as decisões dos algoritmos à simulação visual e ao painel de telemetria. | 
-| **Fase 4: Polimento e Documentação** | 28/09 – 02/10 | Ajustes de UI, validação dos casos de teste e preparação do relatório final. | 
+| **Fase 1: Módulos Algorítmicos** | 13/09 – 17/09 | Implementação dos algoritmos de Mochila Fracionária e Caminhoneiro em C++. |
+| **Fase 2: Motor Gráfico 2D** | 18/09 – 22/09 | Configuração do Raylib, criação da janela e renderização dos corpos celestes e da sonda. |
+| **Fase 3: Integração e Animação** | 23/09 – 27/09 | Vincular as decisões dos algoritmos à simulação visual e ao painel de telemetria. |
+| **Fase 4: Polimento e Documentação** | 28/09 – 02/10 | Ajustes de UI, validação dos casos de teste e preparação do relatório final. |
 
 ## 📜 Licença
 
