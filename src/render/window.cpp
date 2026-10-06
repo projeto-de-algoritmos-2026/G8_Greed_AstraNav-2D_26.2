@@ -59,11 +59,23 @@ namespace astranav::render {
         DrawLineEx({start_x, y_pos}, {end_x, y_pos}, 2.0f, Fade(LIGHTGRAY, 0.4f));
         
         /* Terra */
-        DrawCircleV({start_x, y_pos}, 12.0f, BLUE);
+        // 1. Glow / Atmosfera sutil ao redor da Terra
+        DrawCircle((int)start_x, (int)y_pos, 16.0f, Fade(SKYBLUE, 0.3f));
+
+        // 2. Corpo do planeta com gradiente radial (dando efeito esférico/volume)
+        DrawCircleGradient((int)start_x, (int)y_pos, 12.0f, SKYBLUE, DARKBLUE);
+
+        // Label
         DrawText("Terra", start_x - 15, y_pos + 20, 18, RAYWHITE);
 
         /* Destino */
-        DrawCircleV({end_x, y_pos}, 16.0f, PURPLE);
+        // 1. Glow / Atmosfera sutil ao redor do Destino
+        DrawCircle((int)end_x, (int)y_pos, 22.0f, Fade(PINK, 0.3f));
+
+        // 2. Corpo do planeta com gradiente radial
+        DrawCircleGradient((int)end_x, (int)y_pos, 16.0f, MAGENTA, DARKPURPLE);
+
+        // Label
         DrawText("Destino", end_x - 30, y_pos + 25, 18, RAYWHITE);
 
         for (const auto& outpost : all_outposts) {
@@ -72,10 +84,18 @@ namespace astranav::render {
             bool is_stop = std::ranges::any_of(plan.stops_made,
                 [&](const auto& stop) { return stop.name == outpost.name; });
 
-            Color node_color = is_stop ? YELLOW : DARKGRAY;
-            float radius = is_stop ? 8.0f : 5.0f;
+            if (is_stop) {
+                // 1. Halo atmosférico (glow) para a estação de reabastecimento ativa
+                DrawCircle((int)pos_x, (int)y_pos, 12.0f, Fade(YELLOW, 0.3f));
 
-            DrawCircleV({pos_x, y_pos}, radius, node_color);
+                // 2. Gradiente radial volumétrico 3D (amarelo para laranja)
+                DrawCircleGradient((int)pos_x, (int)y_pos, 8.0f, YELLOW, ORANGE);
+            } else {
+                // Estações secundárias/inativas (mais discretas, mas com volume 3D)
+                DrawCircle((int)pos_x, (int)y_pos, 7.0f, Fade(DARKGRAY, 0.3f));
+                DrawCircleGradient((int)pos_x, (int)y_pos, 5.0f, GRAY, DARKGRAY);
+            }
+
             DrawText(outpost.name.c_str(), pos_x - 35, y_pos - 25, 14, LIGHTGRAY);
 
             if (is_stop) { DrawText("REABASTECER", pos_x - 40, y_pos + 15, 12, YELLOW); }
