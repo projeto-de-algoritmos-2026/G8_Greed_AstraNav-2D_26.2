@@ -74,26 +74,32 @@ namespace astranav::render {
         DrawRectangleRounded(Rectangle{0, 0, sidebar_width, screen_height}, 0.02f, 4, Color{15, 20, 30, 255});
         DrawRectangleRoundedLines(Rectangle{0, 0, sidebar_width, screen_height}, 0.02f, 4, 2.0f, Fade(LIGHTGRAY, 0.2f));
 
-        // Margem interna segura para os elementos da sidebar
         float padding = 15.0f;
         float item_width = sidebar_width - (padding * 2.0f); // 360 - 30 = 330px de largura útil
 
         // 2. Títulos da Sidebar
-        DrawText("PAINEL DE CONTROLO", padding, y, 20, RAYWHITE);
+        DrawText("PAINEL DE CONTROLE", padding, y, 20, RAYWHITE);
         DrawText("MANIFESTO DE CARGA", padding, y + 35, 14, SKYBLUE);
 
         float current_y = y + 70;
 
         // 3. Listagem de itens de carga
         for (const auto& item : cargo.loaded_items) {
-            Color item_color = (item.fraction_taken < 1.0) ? ORANGE : LIME;
-
-            DrawRectangleRounded(Rectangle{padding, current_y, item_width, 40}, 0.1f, 4, Fade(item_color, 0.2f));
-            DrawRectangleRoundedLines(Rectangle{padding, current_y, item_width, 40}, 0.1f, 4, 1.5f, item_color);
-
-            const char* text = TextFormat("%s, (%.0f%%)", item.name.c_str(), item.fraction_taken * 100);
-            DrawText(text, padding + 10, current_y + 10, 16, WHITE);
-
+            Color item_color;
+            if (item.fraction_taken == 0.0) {
+                item_color = DARKGRAY; 
+            } else if (item.fraction_taken < 1.0) {
+                item_color = ORANGE;   
+            } else {
+                item_color = LIME;     
+            }
+            
+            DrawRectangle(x + 15, current_y, 290, 35, Fade(item_color, 0.3f));
+            DrawRectangleLines(x + 15, current_y, 290, 35, item_color);
+            
+            const char* text = TextFormat("%s (%.0f%%)", item.name.c_str(), item.fraction_taken * 100);
+            DrawText(text, x + 25, current_y + 8, 16, WHITE);
+            
             current_y += 50;
         }
 
@@ -101,19 +107,13 @@ namespace astranav::render {
         DrawText(TextFormat("Peso Usado: %.1f kg", cargo.total_weight), padding, current_y + 10, 16, LIGHTGRAY);
         DrawText(TextFormat("Retorno Científico: %.1f", cargo.total_scientific_return), padding, current_y + 35, 16, GREEN);
 
-        // 5. Seção de Controlos da Simulação
+        // 5. Seção de Controles da Simulação
         float controls_y = screen_height - 140.0f;
         DrawLineEx({padding, controls_y}, {sidebar_width - padding, controls_y}, 1.0f, Fade(LIGHTGRAY, 0.3f));
-        DrawText("CONTROLOS DA SIMULAÇÃO", padding, controls_y + 15, 14, GRAY);
+        DrawText("CONTROLES DE SIMULAÇÃO", padding, controls_y + 15, 14, GRAY);
 
-        // Botões ajustados para caber perfeitamente dentro dos 360px
         float button_width = (item_width - 10.0f) / 2.0f; // Divide o espaço em duas colunas simétricas
 
-        DrawRectangleRounded(Rectangle{padding, controls_y + 45, button_width, 35}, 0.2f, 4, Fade(DARKGRAY, 0.5f));
-        DrawText("[ PLAY / PAUSE ]", padding + 8, controls_y + 55, 11, LIGHTGRAY);
-
-        DrawRectangleRounded(Rectangle{padding + button_width + 10.0f, controls_y + 45, button_width, 35}, 0.2f, 4, Fade(DARKGRAY, 0.5f));
-        DrawText("[ VELOCIDADE 1X ]", padding + button_width + 15.0f, controls_y + 55, 11, LIGHTGRAY);
     }
 
     void Window::draw_flight_plan(const algorithms::RoutePlan& plan, const std::vector<algorithms::Outpost>& all_outposts, double total_distance, float y_pos) const {
@@ -144,6 +144,7 @@ namespace astranav::render {
         // Label
         DrawText("Destino", end_x - 30, y_pos + 25, 18, RAYWHITE);
 
+        int index = 0;
         for (const auto& outpost : all_outposts) {
             float pos_x = start_x + (outpost.distance_from_earth / total_distance) * width;
 
@@ -151,20 +152,19 @@ namespace astranav::render {
                 [&](const auto& stop) { return stop.name == outpost.name; });
 
             if (is_stop) {
-                // 1. Halo atmosférico (glow) para a estação de reabastecimento ativa
                 DrawCircle((int)pos_x, (int)y_pos, 12.0f, Fade(YELLOW, 0.3f));
 
-                // 2. Gradiente radial volumétrico 3D (amarelo para laranja)
                 DrawCircleGradient((int)pos_x, (int)y_pos, 8.0f, YELLOW, ORANGE);
             } else {
-                // Estações secundárias/inativas (mais discretas, mas com volume 3D)
                 DrawCircle((int)pos_x, (int)y_pos, 7.0f, Fade(DARKGRAY, 0.3f));
                 DrawCircleGradient((int)pos_x, (int)y_pos, 5.0f, GRAY, DARKGRAY);
             }
 
-            DrawText(outpost.name.c_str(), pos_x - 35, y_pos - 25, 14, LIGHTGRAY);
+            float text_y_offset = (index % 2 == 0) ? -32.0f : 18.0f;
+            DrawText(outpost.name.c_str(), pos_x - 30, y_pos + text_y_offset, 14, LIGHTGRAY);
 
-            if (is_stop) { DrawText("REABASTECER", pos_x - 40, y_pos + 15, 12, YELLOW); }
+            if (is_stop) { DrawText("REABASTECER", pos_x - 40, y_pos + 35, 12, YELLOW); }
+            index++;
         }
     }
 
@@ -183,5 +183,22 @@ namespace astranav::render {
 
         Color fuel_color = (current_fuel > 50.0) ? LIME : RED;
         DrawText(TextFormat("Combustivel: %.1f", current_fuel), pos_x - 40, y_pos - 40, 16, fuel_color);
+    }
+
+    void Window::draw_progress_bar(double current_pos, double total_distance, float x, float y, float width, float height) const {
+        if (total_distance <= 0.0) return;
+        
+        float progress = static_cast<float>(current_pos / total_distance);
+        if (progress > 1.0f) progress = 1.0f;
+        if (progress < 0.0f) progress = 0.0f;
+
+        DrawRectangle((int)x, (int)y, (int)width, (int)height, Fade(DARKGRAY, 0.6f));
+        DrawRectangleLines((int)x, (int)y, (int)width, (int)height, LIGHTGRAY);
+
+        float filled_width = width * progress;
+        DrawRectangle((int)x, (int)y, (int)filled_width, (int)height, LIME);
+
+        const char* text = TextFormat("Progresso: %.1f / %.1f km (%.1f%%)", current_pos, total_distance, progress * 100.0f);
+        DrawText(text, (int)x + (int)(width / 2) - MeasureText(text, 12) / 2, (int)y - 18, 12, RAYWHITE);
     }
 }
