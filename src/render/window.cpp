@@ -29,11 +29,17 @@ namespace astranav::render {
     void Window::draw_stars(double probe_position) const {
         float screen_width = (float)GetScreenWidth();
 
-        for (const auto& star : stars) {
-            // Calcula o deslocamento isolado baseado na posição da sonda
-            float offset = (float)probe_position * star.parallax_factor;
+        // Pega o tempo contínuo de execução do jogo em segundos
+        float current_time = (float)GetTime();
 
-            // Envolve a coordenada X (wrapping). Se a estrela sair pela esquerda, ressurge na direita
+        for (const auto& star : stars) {
+            // Define uma velocidade base para o universo continuar a mover-se sozinho
+            float drift_speed = 25.0f;
+
+            // O deslocamento agora é a soma do tempo contínuo e da posição da sonda
+            float offset = ((float)probe_position + (current_time * drift_speed)) * star.parallax_factor;
+
+            // Envolve a coordenada X (wrapping)
             float draw_x = fmodf(star.x - offset, screen_width);
             if (draw_x < 0) {
                 draw_x += screen_width;
